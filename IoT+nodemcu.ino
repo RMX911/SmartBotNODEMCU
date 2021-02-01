@@ -2,15 +2,15 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
-#include <WebSocketsClient.h> //  get it from https://github.com/Links2004/arduinoWebSockets/releases 
-#include <ArduinoJson.h> // get it from https://arduinojson.org/ or install via Arduino library manager
+#include <WebSocketsClient.h>  
+#include <ArduinoJson.h> 
 #include<Hash.h>
 ESP8266WiFiMulti WiFiMulti;
 WebSocketsClient webSocket;
 
-#define MyApiKey "" // TODO: Change to your sinric API Key. Your API Key is displayed on sinric.com dashboard
-#define MySSID "ajax1" // TODO: Change to your Wifi network SSID
-#define MyWifiPassword "ajax123456" // TODO: Change to your Wifi network password
+#define MyApiKey "" 
+#define MySSID "ajax1" 
+#define MyWifiPassword "ajax123456" 
 
 #define HEARTBEAT_INTERVAL 300000 // 5 Minutes 
 
@@ -133,19 +133,8 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
       break;
     case WStype_TEXT: {
         Serial.printf("[WSc] get text: %s\n", payload);
-        // Example payloads
-
-        // For Switch or Light device types
-        // {"deviceId": xxxx, "action": "setPowerState", value: "ON"} // https://developer.amazon.com/docs/device-apis/alexa-powercontroller.html
-
-        // For Light device type
-        // {"deviceId": xxxx, "action": "AdjustBrightness", value: 3} // https://developer.amazon.com/docs/device-apis/alexa-brightnesscontroller.html
-        // {"deviceId": xxxx, "action": "setBrightness", value: 42} // https://developer.amazon.com/docs/device-apis/alexa-brightnesscontroller.html
-        // {"deviceId": xxxx, "action": "SetColor", value: {"hue": 350.5,  "saturation": 0.7138, "brightness": 0.6501}} // https://developer.amazon.com/docs/device-apis/alexa-colorcontroller.html
-        // {"deviceId": xxxx, "action": "DecreaseColorTemperature", value: 0} // https://developer.amazon.com/docs/device-apis/alexa-colortemperaturecontroller.html
-        // {"deviceId": xxxx, "action": "IncreaseColorTemperature", value: 0} // https://developer.amazon.com/docs/device-apis/alexa-colortemperaturecontroller.html
-        // {"deviceId": xxxx, "action": "SetColorTemperature", value: 2200} // https://developer.amazon.com/docs/device-apis/alexa-colortemperaturecontroller.html
-        
+       
+       
         DynamicJsonBuffer jsonBuffer;
         JsonObject& json = jsonBuffer.parseObject((char*)payload); 
         String deviceId = json ["deviceId"];     
@@ -224,8 +213,8 @@ void setup() {
   webSocket.onEvent(webSocketEvent);
   webSocket.setAuthorization("apikey", MyApiKey);
   
-  // try again every 5000ms if connection has failed
-  webSocket.setReconnectInterval(5000);   // If you see 'class WebSocketsClient' has no member named 'setReconnectInterval' error update arduinoWebSockets
+  
+  webSocket.setReconnectInterval(5000);  
 }
 
 void loop() {
@@ -234,7 +223,7 @@ void loop() {
   if(isConnected) {
       uint64_t now = millis();
       
-      // Send heartbeat in order to avoid disconnections during ISP resetting IPs over night. Thanks @MacSass
+      // Send heartbeat in order to avoid disconnections during ISP resetting IPs over night.
       if((now - heartbeatTimestamp) > HEARTBEAT_INTERVAL) {
           heartbeatTimestamp = now;
           webSocket.sendTXT("H");          
